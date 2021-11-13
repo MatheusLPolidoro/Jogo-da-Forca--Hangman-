@@ -31,6 +31,7 @@ class mostrar_app(tk.Tk):
             self.frames[nome_pagina].txt_entrada.delete(0, "end")
             self.frames[nome_pagina].txt_entrada.focus_set()
         elif nome_pagina == "Frame_palavra_e_dica":
+            gui.palavra_principal = []
             self.frames[nome_pagina].txt_dica.delete(0, "end")
             self.frames[nome_pagina].txt_palavra.delete(0, "end")
             self.frames[nome_pagina].txt_dica.focus_set()
