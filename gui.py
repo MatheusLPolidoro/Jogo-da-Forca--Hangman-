@@ -12,7 +12,6 @@ verde = "#9cc814"
 vermelho = "#f83030"
 marrom = "#f7b239"
 
-
 class Frame_menu(tk.Frame):
 
     def __init__(self, controller):
