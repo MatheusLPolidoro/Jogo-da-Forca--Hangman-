@@ -1,5 +1,5 @@
+from asyncio.tasks import create_task
 import tkinter as tk
-from tkinter.constants import CENTER
 import os
 
 pasta_app = os.path.dirname(__file__) + "\\images\\"
@@ -12,11 +12,12 @@ verde = "#9cc814"
 vermelho = "#f83030"
 marrom = "#f7b239"
 
+
 class Frame_menu(tk.Frame):
 
-    def __init__(self, controller):
+    def __init__(self, controle, **kwargs):
         tk.Frame.__init__(self)
-        self.controller = controller
+        self.controle = controle
         self.configure(background=fundo_escuro)
 
         self.img_forca_logo = tk.PhotoImage(file=pasta_app + "forca_logo.png")
@@ -35,7 +36,7 @@ class Frame_menu(tk.Frame):
 
         self.btn_digitar_palavra = tk.Button(self,
                                              text="Digitar Palavra",
-                                             command=lambda: controller.mostrar_frame(
+                                             command=lambda: controle.mostrar_frame(
                                                  "Frame_palavra_e_dica"),
                                              font="Corbel 30 italic",
                                              background=fundo_escuro,
@@ -48,7 +49,7 @@ class Frame_menu(tk.Frame):
         self.btn_sortear_palavra = tk.Button(self,
                                              text="Sortear Palavra",
                                              command=lambda:
-                                             controller.mostrar_frame(
+                                             controle.mostrar_frame(
                                                  "Frame_jogo"),
                                              font="Corbel 30 italic",
                                              background=fundo_escuro,
@@ -83,9 +84,9 @@ class Frame_menu(tk.Frame):
 
 class Frame_palavra_e_dica(tk.Frame):
 
-    def __init__(self, controller):
+    def __init__(self, controle, **kwargs):
         tk.Frame.__init__(self)
-        self.controller = controller
+        self.controle = controle
         self.configure(background=fundo_escuro)
 
         self.palavra = []
@@ -127,7 +128,7 @@ class Frame_palavra_e_dica(tk.Frame):
                                         )
         self.lb_valicao_dica.place(relx=.765,
                                    rely=.35,
-                                   anchor=CENTER,
+                                   anchor=tk.CENTER,
                                    height=60,
                                    width=60
                                    )
@@ -166,7 +167,7 @@ class Frame_palavra_e_dica(tk.Frame):
                                            )
         self.lb_valicao_palavra.place(relx=.858,
                                       rely=.55,
-                                      anchor=CENTER,
+                                      anchor=tk.CENTER,
                                       height=60,
                                       width=60
                                       )
@@ -179,7 +180,7 @@ class Frame_palavra_e_dica(tk.Frame):
 
         self.btn_opcao = tk.Button(self,
                                    text="Voltar",
-                                   command=lambda: controller.mostrar_frame(
+                                   command=lambda: controle.mostrar_frame(
                                        "Frame_menu"),
                                    font="Corbel 20 italic",
                                    background=fundo_escuro,
@@ -258,7 +259,12 @@ class Frame_palavra_e_dica(tk.Frame):
     def formatar_entrada_palavra(self, event=None):
         self.upper_case = event.keysym.upper()
         self.lb_valicao_palavra.config(image='')
-        self.txt_palavra.config(highlightbackground=branco)
+        self.txt_palavra.config(highlightbackground=branco,
+                                highlightcolor=verde,
+                                insertbackground=verde)
+
+        if event.keysym.lower() == "return":
+            self.validar_dica_e_palavra()
 
         if event.keysym.lower() == "backspace" and len(self.palavra) > 0:
             self.palavra.pop()
@@ -273,7 +279,7 @@ class Frame_palavra_e_dica(tk.Frame):
 
     def validar_dica_e_palavra(self):
         self.lb_valicao_dica.focus()
-        dica = self.txt_dica.get().replace(' ','')
+        dica = self.txt_dica.get().replace(' ', '')
         palavra = self.txt_palavra.get()
         dica_valida = palavra_valida = False
         if not dica.isalpha():
@@ -302,22 +308,24 @@ class Frame_palavra_e_dica(tk.Frame):
 
         if dica_valida == True and palavra_valida == True:
             self.after(
-                1000, lambda: self.controller.mostrar_frame("Frame_jogo"))
+                1000, lambda: self.controle.mostrar_frame("Frame_jogo"))
 
 
 class Frame_jogo(tk.Frame):
 
-    def __init__(self, controller):
+    def __init__(self, controle, **kwargs):
         tk.Frame.__init__(self)
-        self.controller = controller
+        self.controle = controle
+        self.forca = kwargs['jogo']
         self.configure(background=fundo_escuro)
 
-        self.img_forca = tk.PhotoImage(file=pasta_app + "forca_0.png")
-        self.lb_forca = tk.Label(self,
-                                 image=self.img_forca,
-                                 background=fundo_escuro
-                                 )
-        self.lb_forca.place(x=454, y=102)
+        self.img_forca = [tk.PhotoImage(
+            file=pasta_app + f'forca_{i}.png') for i in range(0, 7)]
+
+        self.canvas = tk.Canvas(
+            self, width=170, height=198, bg=fundo_escuro, highlightthickness=0)
+        self.canvas.create_image(0, 0, image=self.img_forca[0], anchor=tk.NW)
+        self.canvas.place(relx=.5, rely=.34, anchor=tk.CENTER)
 
         self.txt_dica = tk.Entry(self,
                                  background=fundo_escuro,
@@ -328,7 +336,6 @@ class Frame_jogo(tk.Frame):
                                  insertontime=0
                                  )
 
-        # => incluir váriavel que ira guardar a dica da palavra
         self.txt_dica.bind("<Key>", self.posicionar_cursor)
         self.txt_dica.place(x=40, y=50, width=1000)
 
@@ -341,18 +348,17 @@ class Frame_jogo(tk.Frame):
                                     insertontime=0
                                     )
 
-        # => a validação da tecla <enter> deve acionar função do botão "enviar" (modificar qtd erros e qtd acertos)
         self.txt_palavra.bind("<Key>", self.posicionar_cursor)
         self.txt_palavra.place(x=40, y=300, width=1000)
 
         self.lb_letras_erradas = tk.Label(self,
-                                          # => o resultado da funcão de validação da letra pode alterar esse valor
-                                          text='a  b  c  d  e  f  g',
+                                          text='teste',
                                           background=fundo_escuro,
                                           foreground=vermelho,
                                           anchor=tk.CENTER,
                                           font="Corbel 20 italic"
-                                          ).place(x=40, y=370, width=1000)
+                                          )
+        self.lb_letras_erradas.place(x=40, y=370, width=1000)
 
         self.txt_entrada = tk.Entry(self,
                                     background="#383b37",
@@ -368,8 +374,7 @@ class Frame_jogo(tk.Frame):
 
         self.enviar_btn = tk.Button(self,
                                     text="Enviar",
-                                    command=lambda: controller.mostrar_frame(
-                                        "Frame_jogo"),
+                                    command=lambda: self.opcoes_botao(),
                                     font="corbel 15 italic bold",
                                     width=12,
                                     background="#1a7420",
@@ -379,6 +384,8 @@ class Frame_jogo(tk.Frame):
                                     borderwidth=0,
                                     highlightthickness=3,
                                     ).place(relx=.5, rely=.85, anchor="center")
+        self.txt_entrada.bind(
+            "<Return>", lambda x: self.opcoes_botao())
 
         self.img_trevo = tk.PhotoImage(
             file=pasta_app + "trevo_de_quatro_folhas.png")
@@ -391,7 +398,7 @@ class Frame_jogo(tk.Frame):
 
         self.btn_opcao = tk.Button(self,
                                    text="Arriscar",
-                                   command=self.arriscar_palavra,
+                                   command=self.arriscar_opcoes,
                                    font="Corbel 20 italic",
                                    background=fundo_escuro,
                                    activebackground=fundo_escuro,
@@ -409,7 +416,7 @@ class Frame_jogo(tk.Frame):
 
         self.btn_desistir = tk.Button(self,
                                       text="Desistir",
-                                      command=lambda: controller.mostrar_frame(
+                                      command=lambda: controle.mostrar_frame(
                                           "Frame_perdeu_jogo"),
                                       font="Corbel 20 italic",
                                       background=fundo_escuro,
@@ -419,23 +426,66 @@ class Frame_jogo(tk.Frame):
                                       activeforeground=branco
                                       ).place(x=110, y=520, width=100, height=60)
 
-    def arriscar_palavra(self):
-
+    def opcoes_botao(self):
         if self.txt_entrada.winfo_width() == 100:
-            background = "#212125"
-            foreground = verde
-            width = 1000
-            self.img_opcao_arriscar.config(image=self.img_voltar)
-            self.btn_opcao.config(text="Voltar")
+            self.arriscar_letra()
         else:
-            background = "#383b37"
-            foreground = "#cbceff"
-            width = 100
-            self.img_opcao_arriscar.config(image=self.img_trevo)
+            self.arriscar_palavra_completa()
 
-        self.txt_entrada.config(background=background, foreground=foreground)
-        self.txt_entrada.place_configure(relx=.5, width=width, anchor="center")
+    def arriscar_palavra_completa(self):
+        palavra = self.txt_entrada.get()
+
+        self.forca.arriscar(palavra)
+        i = self.forca.quantidade_de_erros
+        self.canvas.create_image(0, 0, image=self.img_forca[i], anchor=tk.NW)
+        self.update()
+        self.validar_jogo()
+
+    def arriscar_letra(self):
+        letra = self.txt_entrada.get()
+
+        self.forca.tentar(letra)
+        self.txt_palavra.delete(0, "end")
+        self.txt_palavra.insert(0, self.forca.palavra_formatada)
+
+        i = self.forca.quantidade_de_erros
+        self.canvas.create_image(0, 0, image=self.img_forca[i], anchor=tk.NW)
+
+        self.lb_letras_erradas.config(
+            text=str(', '.join(self.forca.letras_erradas)))
+
+        self.update()
+
+        self.validar_jogo()
+
+    def validar_jogo(self):
+        if self.forca.perdeu == True:
+            self.forca.perdeu = False
+            self.after(1000, self.controle.mostrar_frame("Frame_perdeu_jogo"))
+
+        if self.forca.venceu == True:
+            self.forca.venceu = False
+            self.after(1000, self.controle.mostrar_frame("Frame_venceu_jogo"))
+
+    def arriscar_opcoes(self):
+        if self.txt_entrada.winfo_width() == 100:
+            self.modo_palavra()
+        else:
+            self.modo_letra()
+
+    def modo_palavra(self):
+        self.txt_entrada.config(background="#212125", foreground=verde)
+        self.txt_entrada.place_configure(relx=.5, width=1000, anchor="center")
         self.txt_entrada.delete(0, "end")
+        self.img_opcao_arriscar.config(image=self.img_voltar)
+        self.btn_opcao.config(text="Voltar")
+
+    def modo_letra(self):
+        self.txt_entrada.config(background="#383b37", foreground="#cbceff")
+        self.txt_entrada.place_configure(relx=.5, width=100, anchor="center")
+        self.txt_entrada.delete(0, "end")
+        self.img_opcao_arriscar.config(image=self.img_trevo)
+        self.btn_opcao.config(text="Arriscar")
 
     def posicionar_cursor(self, event=None):
 
@@ -465,9 +515,9 @@ class Frame_jogo(tk.Frame):
 
 class Frame_perdeu_jogo(tk.Frame):
 
-    def __init__(self, controller):
+    def __init__(self, controle, **kwargs):
         tk.Frame.__init__(self)
-        self.controller = controller
+        self.controle = controle
         self.configure(background=fundo_escuro)
 
         self.img_perdeu = tk.PhotoImage(file=pasta_app + "img_perdeu.png")
@@ -489,7 +539,8 @@ class Frame_perdeu_jogo(tk.Frame):
                                        font="corbel 23",
                                        background=fundo_escuro,
                                        foreground=branco
-                                       ).place(relx=.12, rely=.7, anchor="w")
+                                       )
+        self.lb_msg_palavra.place(relx=.12, rely=.7, anchor="w")
 
         tk.Frame(self,
                  background=branco,
@@ -499,7 +550,7 @@ class Frame_perdeu_jogo(tk.Frame):
 
         self.btn_menu = tk.Button(self,
                                   text="Menu",
-                                  command=lambda: controller.mostrar_frame(
+                                  command=lambda: controle.mostrar_frame(
                                       "Frame_menu"),
                                   font="Corbel 20 italic bold",
                                   background=fundo_escuro,
@@ -512,7 +563,7 @@ class Frame_perdeu_jogo(tk.Frame):
 
         self.btn_jogar_novamente = tk.Button(self,
                                              text="Jogar Novamente",
-                                             command=lambda: controller.mostrar_frame(
+                                             command=lambda: controle.mostrar_frame(
                                                  "Frame_palavra_e_dica"),
                                              font="Corbel 20 italic bold",
                                              background=fundo_escuro,
@@ -526,9 +577,9 @@ class Frame_perdeu_jogo(tk.Frame):
 
 class Frame_venceu_jogo(tk.Frame):
 
-    def __init__(self, controller):
+    def __init__(self, controle, **kwargs):
         tk.Frame.__init__(self)
-        self.controller = controller
+        self.controle = controle
 
         self.img_bg = tk.PhotoImage(file=pasta_app + "backgroud_venceu.png")
         self.lb_bg = tk.Label(self,
@@ -548,11 +599,12 @@ class Frame_venceu_jogo(tk.Frame):
                                        background=fundo_escuro,
                                        foreground=branco,
                                        font="corbel 23 italic"
-                                       ).place(relx=.5, rely=.6, anchor="center")
+                                       )
+        self.lb_msg_palavra.place(relx=.5, rely=.6, anchor="center")
 
         self.btn_menu = tk.Button(self,
                                   text="Menu",
-                                  command=lambda: controller.mostrar_frame(
+                                  command=lambda: controle.mostrar_frame(
                                       "Frame_menu"),
                                   font="Corbel 20 italic bold",
                                   background=fundo_escuro,
@@ -565,8 +617,8 @@ class Frame_venceu_jogo(tk.Frame):
 
         self.btn_jogar_novamente = tk.Button(self,
                                              text="Jogar Novamente",
-                                             command=lambda: controller.mostrar_frame(
-                                                 "Frame_jogo"),
+                                             command=lambda: controle.mostrar_frame(
+                                                 "Frame_palavra_e_dica"),
                                              font="Corbel 20 italic bold",
                                              background=fundo_escuro,
                                              activebackground=fundo_escuro,
