@@ -62,6 +62,7 @@ class mostrar_app(tk.Tk):
         self.frame_palavra_e_dica.txt_dica.focus_set()
 
 
+
 if __name__ == "__main__":
     app = mostrar_app()
     app.mainloop()
