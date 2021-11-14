@@ -1,15 +1,9 @@
 import tkinter as tk
 from tkinter.constants import CENTER
-import forca as fc
 import os
 
 pasta_app = os.path.dirname(__file__) + "\\images\\"
 quantidade_de_erros = 0
-
-dica_palavra = "DICA AQUI"  # implementar escolha da dica
-palavra_principal = []
-
-forca = fc.Fc()
 
 # --> cores pré selecionadas:
 fundo_escuro = "#212121"
@@ -94,6 +88,8 @@ class Frame_palavra_e_dica(tk.Frame):
         tk.Frame.__init__(self)
         self.controller = controller
         self.configure(background=fundo_escuro)
+
+        self.palavra = []
 
         self.lb_dica = tk.Label(self,
                                 text="Digite a dica",
@@ -232,7 +228,7 @@ class Frame_palavra_e_dica(tk.Frame):
         elif event.keysym.upper() == "SCPACE":
             return
 
-        if not texto_limite.isalpha() and len(texto_limite) > 0:
+        if not texto_limite.replace(' ', '').isalpha() and len(texto_limite) > 0:
             self.lb_valicao_dica.config(image=self.img_invalido)
             self.txt_dica.config(highlightcolor=vermelho,
                                  insertbackground=vermelho)
@@ -257,28 +253,28 @@ class Frame_palavra_e_dica(tk.Frame):
         texto_limite = self.txt_palavra.get()[:max] + '_ '
         self.txt_palavra.delete(0, "end")
         self.txt_palavra.insert(0, texto_limite)
-        if len(palavra_principal) > 23:
-            palavra_principal.pop()
+        if len(self.palavra) > 23:
+            self.palavra.pop()
 
     def formatar_entrada_palavra(self, event=None):
         self.upper_case = event.keysym.upper()
         self.lb_valicao_palavra.config(image='')
         self.txt_palavra.config(highlightbackground=branco)
 
-        if event.keysym.lower() == "backspace" and len(palavra_principal) > 0:
-            palavra_principal.pop()
+        if event.keysym.lower() == "backspace" and len(self.palavra) > 0:
+            self.palavra.pop()
             inicio = len(self.txt_palavra.get()) - 2
             self.txt_palavra.delete(inicio, "end")
             return "break"
         if len(event.keysym) == 1 and event.keysym not in '0123456789':
             self.max_caracteres(46)
-            palavra_principal.append(self.upper_case)
-            print(palavra_principal)
+            self.palavra.append(self.upper_case)
+            print(self.palavra)
         return "break"
 
     def validar_dica_e_palavra(self):
         self.lb_valicao_dica.focus()
-        dica = self.txt_dica.get()
+        dica = self.txt_dica.get().replace(' ','')
         palavra = self.txt_palavra.get()
         dica_valida = palavra_valida = False
         if not dica.isalpha():
@@ -317,8 +313,7 @@ class Frame_jogo(tk.Frame):
         self.controller = controller
         self.configure(background=fundo_escuro)
 
-        self.img_forca = tk.PhotoImage(file=pasta_app + "forca_" +
-                                       str(quantidade_de_erros) + ".png")  # => implementar troca dessa imagem (lb_forca)
+        self.img_forca = tk.PhotoImage(file=pasta_app + "forca_0.png")
         self.lb_forca = tk.Label(self,
                                  image=self.img_forca,
                                  background=fundo_escuro
@@ -335,7 +330,6 @@ class Frame_jogo(tk.Frame):
                                  )
 
         # => incluir váriavel que ira guardar a dica da palavra
-        self.txt_dica.insert(0, dica_palavra)
         self.txt_dica.bind("<Key>", self.posicionar_cursor)
         self.txt_dica.place(x=40, y=50, width=1000)
 
@@ -348,9 +342,6 @@ class Frame_jogo(tk.Frame):
                                     insertontime=0
                                     )
 
-        # => incluir váriavel que ira guardar a palavra
-        forca.palavra_principal = ''.join(palavra_principal)
-        self.txt_palavra.insert(0, forca.palavra_principal)
         # => a validação da tecla <enter> deve acionar função do botão "enviar" (modificar qtd erros e qtd acertos)
         self.txt_palavra.bind("<Key>", self.posicionar_cursor)
         self.txt_palavra.place(x=40, y=300, width=1000)
@@ -495,8 +486,7 @@ class Frame_perdeu_jogo(tk.Frame):
                                       ).place(relx=.1, rely=.6, anchor="w")
 
         self.lb_msg_palavra = tk.Label(self,
-                                       text="A palavra é " +
-                                       ''.join(palavra_principal),
+                                       text="A palavra é ",
                                        font="corbel 23",
                                        background=fundo_escuro,
                                        foreground=branco
@@ -524,7 +514,7 @@ class Frame_perdeu_jogo(tk.Frame):
         self.btn_jogar_novamente = tk.Button(self,
                                              text="Jogar Novamente",
                                              command=lambda: controller.mostrar_frame(
-                                                 "Frame_jogo"),
+                                                 "Frame_palavra_e_dica"),
                                              font="Corbel 20 italic bold",
                                              background=fundo_escuro,
                                              activebackground=fundo_escuro,
@@ -555,8 +545,7 @@ class Frame_venceu_jogo(tk.Frame):
                                       ).place(relx=.5, rely=.5, anchor="center")
 
         self.lb_msg_palavra = tk.Label(self,
-                                       text="A palavra é " +
-                                       ''.join(palavra_principal),
+                                       text="A palavra é ",
                                        background=fundo_escuro,
                                        foreground=branco,
                                        font="corbel 23 italic"
