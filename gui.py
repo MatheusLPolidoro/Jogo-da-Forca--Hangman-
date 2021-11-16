@@ -1,4 +1,3 @@
-from asyncio.tasks import create_task
 import tkinter as tk
 import os
 
@@ -37,7 +36,7 @@ class Frame_menu(tk.Frame):
         self.btn_digitar_palavra = tk.Button(self,
                                              text="Digitar Palavra",
                                              command=lambda: controle.mostrar_frame(
-                                                 "Frame_palavra_e_dica"),
+                                                 "Frame_palavra_e_dica", "troca_de_tela"),
                                              font="Corbel 30 italic",
                                              background=fundo_escuro,
                                              activebackground=fundo_escuro,
@@ -50,7 +49,7 @@ class Frame_menu(tk.Frame):
                                              text="Sortear Palavra",
                                              command=lambda:
                                              controle.mostrar_frame(
-                                                 "Frame_jogo"),
+                                                 "Frame_dificuldade", "troca_de_tela"),
                                              font="Corbel 30 italic",
                                              background=fundo_escuro,
                                              activebackground=fundo_escuro,
@@ -79,7 +78,8 @@ class Frame_menu(tk.Frame):
                                  ).place(x=710, y=520, width=300, height=60)
 
     def sair_jogo(self):
-        self.quit()
+        self.controle.play("erro")
+        self.after(200, self.quit())
 
 
 class Frame_palavra_e_dica(tk.Frame):
@@ -181,7 +181,7 @@ class Frame_palavra_e_dica(tk.Frame):
         self.btn_opcao = tk.Button(self,
                                    text="Voltar",
                                    command=lambda: controle.mostrar_frame(
-                                       "Frame_menu"),
+                                       "Frame_menu", "troca_de_tela"),
                                    font="Corbel 20 italic",
                                    background=fundo_escuro,
                                    activebackground=fundo_escuro,
@@ -257,7 +257,7 @@ class Frame_palavra_e_dica(tk.Frame):
             self.palavra.pop()
 
     def formatar_entrada_palavra(self, event=None):
-        self.upper_case = event.keysym.upper()
+        self.upper_case = event.char.upper()
         self.lb_valicao_palavra.config(image='')
         self.txt_palavra.config(highlightbackground=branco,
                                 highlightcolor=verde,
@@ -271,10 +271,9 @@ class Frame_palavra_e_dica(tk.Frame):
             inicio = len(self.txt_palavra.get()) - 2
             self.txt_palavra.delete(inicio, "end")
             return "break"
-        if len(event.keysym) == 1 and event.keysym not in '0123456789':
+        if len(event.char) == 1 and self.upper_case in 'AÀÁÂÃBCÇDEÈÉÊFGHIÌÍÎJKLMNOÒÓÔÕPQRSTUÙÚÛVWYXZ':
             self.max_caracteres(46)
             self.palavra.append(self.upper_case)
-            print(self.palavra)
         return "break"
 
     def validar_dica_e_palavra(self):
@@ -307,8 +306,76 @@ class Frame_palavra_e_dica(tk.Frame):
             palavra_valida = True
 
         if dica_valida == True and palavra_valida == True:
-            self.after(
-                1000, lambda: self.controle.mostrar_frame("Frame_jogo"))
+            self.after(200,self.controle.mostrar_frame("Frame_jogo", "troca_de_tela"))
+
+
+class Frame_dificuldade(tk.Frame):
+
+    def __init__(self, controle, **kwargs):
+        tk.Frame.__init__(self)
+        self.controle = controle
+        self.configure(background=fundo_escuro)
+
+        self.palavra = []
+
+        self.btn_facil = tk.Button(self,
+                                   text="FÁCIL",
+                                   command=lambda: self.selecao_dificuldade(
+                                       "FÁCIL"),
+                                   anchor=tk.CENTER,
+                                   foreground=branco,
+                                   background=fundo_escuro,
+                                   activebackground=verde,
+                                   font="corbel 26 italic",
+                                   borderwidth=0
+                                   ).place(relx=.5, rely=.4, anchor="center", height=50, width=300)
+
+        self.btn_medio = tk.Button(self,
+                                   text="MÉDIO",
+                                   command=lambda: self.selecao_dificuldade(
+                                       "MÉDIO"),
+                                   anchor=tk.CENTER,
+                                   foreground=branco,
+                                   background=fundo_escuro,
+                                   activebackground=verde,
+                                   font="corbel 26 italic",
+                                   borderwidth=0
+                                   ).place(relx=.5, rely=.5, anchor="center", height=50, width=300)
+
+        self.btn_medio = tk.Button(self,
+                                   text="DIFÍCIL",
+                                   command=lambda: self.selecao_dificuldade(
+                                       "DIFÍCIL"),
+                                   anchor=tk.CENTER,
+                                   foreground=branco,
+                                   background=fundo_escuro,
+                                   activebackground=verde,
+                                   font="corbel 26 italic",
+                                   borderwidth=0
+                                   ).place(relx=.5, rely=.6, anchor="center", height=50, width=300)
+
+        self.img_voltar = tk.PhotoImage(file=pasta_app + "voltar_escolha.png")
+        self.img_opcao = tk.Label(self,
+                                  image=self.img_voltar,
+                                  background=fundo_escuro
+                                  ).place(x=880, y=520)
+
+        self.btn_opcao = tk.Button(self,
+                                   text="Voltar",
+                                   command=lambda: controle.mostrar_frame(
+                                       "Frame_menu", "troca_de_tela"),
+                                   font="Corbel 20 italic",
+                                   background=fundo_escuro,
+                                   activebackground=fundo_escuro,
+                                   borderwidth=0,
+                                   foreground=verde,
+                                   activeforeground=branco
+                                   ).place(x=940, y=520, width=100, height=60)
+
+    def selecao_dificuldade(self, dificuldade):
+        self.dificuldade = dificuldade
+        self.controle.sortear_dica()
+        self.controle.sortear_palavra()
 
 
 class Frame_jogo(tk.Frame):
@@ -417,7 +484,7 @@ class Frame_jogo(tk.Frame):
         self.btn_desistir = tk.Button(self,
                                       text="Desistir",
                                       command=lambda: controle.mostrar_frame(
-                                          "Frame_perdeu_jogo"),
+                                          "Frame_perdeu_jogo", "derrota"),
                                       font="Corbel 20 italic",
                                       background=fundo_escuro,
                                       activebackground=fundo_escuro,
@@ -437,6 +504,8 @@ class Frame_jogo(tk.Frame):
 
         self.forca.arriscar(palavra)
         i = self.forca.quantidade_de_erros
+        self.txt_palavra.delete(0, "end")
+        self.txt_palavra.insert(0, self.forca.palavra_formatada)
         self.canvas.create_image(0, 0, image=self.img_forca[i], anchor=tk.NW)
         self.update()
         self.validar_jogo()
@@ -447,6 +516,8 @@ class Frame_jogo(tk.Frame):
         self.forca.tentar(letra)
         self.txt_palavra.delete(0, "end")
         self.txt_palavra.insert(0, self.forca.palavra_formatada)
+
+        self.controle.play("acerto" if self.forca.certa == True else "erro")
 
         i = self.forca.quantidade_de_erros
         self.canvas.create_image(0, 0, image=self.img_forca[i], anchor=tk.NW)
@@ -461,11 +532,11 @@ class Frame_jogo(tk.Frame):
     def validar_jogo(self):
         if self.forca.perdeu == True:
             self.forca.perdeu = False
-            self.after(1000, self.controle.mostrar_frame("Frame_perdeu_jogo"))
+            self.controle.mostrar_frame("Frame_perdeu_jogo", "derrota")
 
         if self.forca.venceu == True:
             self.forca.venceu = False
-            self.after(1000, self.controle.mostrar_frame("Frame_venceu_jogo"))
+            self.controle.mostrar_frame("Frame_venceu_jogo", "vitoria")
 
     def arriscar_opcoes(self):
         if self.txt_entrada.winfo_width() == 100:
@@ -501,13 +572,13 @@ class Frame_jogo(tk.Frame):
         self.txt_entrada.insert(0, texto_limite)
 
     def limitar_entrada(self, event=None):
-        self.upper_case = event.keysym.upper()
+        self.upper_case = event.char.upper()
         if event.keysym.lower() == "backspace":
             return
-        if self.txt_entrada.winfo_width() == 100 and len(event.keysym) == 1 and event.keysym not in '0123456789':
+        if self.txt_entrada.winfo_width() == 100 and len(event.char) == 1 and self.upper_case in 'AÀÁÂÃBCÇDEÈÉÊFGHIÌÍÎJKLMNOÒÓÔÕPQRSTUÙÚÛVWYXZ':
             self.max_caracteres(0)
             return "break"
-        if len(event.keysym) == 1 and event.keysym not in '0123456789':
+        if len(event.char) == 1 and self.upper_case in 'AÀÁÂÃBCÇDEÈÉÊFGHIÌÍÎJKLMNOÒÓÔÕPQRSTUÙÚÛVWYXZ':  # atualizar
             self.max_caracteres(23)
             return "break"
         return "break"
@@ -551,7 +622,7 @@ class Frame_perdeu_jogo(tk.Frame):
         self.btn_menu = tk.Button(self,
                                   text="Menu",
                                   command=lambda: controle.mostrar_frame(
-                                      "Frame_menu"),
+                                      "Frame_menu", "troca_de_tela"),
                                   font="Corbel 20 italic bold",
                                   background=fundo_escuro,
                                   activebackground=fundo_escuro,
@@ -564,7 +635,7 @@ class Frame_perdeu_jogo(tk.Frame):
         self.btn_jogar_novamente = tk.Button(self,
                                              text="Jogar Novamente",
                                              command=lambda: controle.mostrar_frame(
-                                                 "Frame_palavra_e_dica"),
+                                                 'Jogar_novamente', 'troca_de_tela'),
                                              font="Corbel 20 italic bold",
                                              background=fundo_escuro,
                                              activebackground=fundo_escuro,
@@ -605,7 +676,7 @@ class Frame_venceu_jogo(tk.Frame):
         self.btn_menu = tk.Button(self,
                                   text="Menu",
                                   command=lambda: controle.mostrar_frame(
-                                      "Frame_menu"),
+                                      "Frame_menu", "troca_de_tela"),
                                   font="Corbel 20 italic bold",
                                   background=fundo_escuro,
                                   activebackground=fundo_escuro,
@@ -618,7 +689,7 @@ class Frame_venceu_jogo(tk.Frame):
         self.btn_jogar_novamente = tk.Button(self,
                                              text="Jogar Novamente",
                                              command=lambda: controle.mostrar_frame(
-                                                 "Frame_palavra_e_dica"),
+                                                 'Jogar_novamente', 'troca_de_tela'),
                                              font="Corbel 20 italic bold",
                                              background=fundo_escuro,
                                              activebackground=fundo_escuro,
