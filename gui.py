@@ -403,6 +403,14 @@ class Frame_jogo(tk.Frame):
                                  insertontime=0
                                  )
 
+        self.lb_dificuldade = tk.Label(self,
+                                background=fundo_escuro,
+                                foreground=verde,
+                                anchor=tk.CENTER,
+                                font="Corbel 40 italic"
+                                )
+        self.lb_dificuldade .place(x=10, y=30, width=200)                                 
+
         self.txt_dica.bind("<Key>", self.posicionar_cursor)
         self.txt_dica.place(x=40, y=50, width=1000)
 

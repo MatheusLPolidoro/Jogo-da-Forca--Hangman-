@@ -24,6 +24,7 @@ class mostrar_app(tk.Tk):
         self.iconbitmap(gui.pasta_app + 'forca_icone.ico')
         self.img_forca_controle = 0
         self.tela_jogar_novamente = ""
+        self.dificuldade = ""
 
         self.frames = {}
 
@@ -47,12 +48,13 @@ class mostrar_app(tk.Tk):
         self.mostrar_frame("Frame_menu", None)
 
     def mostrar_frame(self, nome_pagina, som):
-        
-        if nome_pagina == 'Jogar_novamente':
+        if nome_pagina == 'Jogar_novamente' and self.tela_jogar_novamente != "repetir":
             nome_pagina = self.tela_jogar_novamente
-            frame = self.frames[nome_pagina]
-        else:
-            frame = self.frames[nome_pagina]
+        elif nome_pagina == 'Jogar_novamente' and self.tela_jogar_novamente == "repetir":
+            nome_pagina = "Frame_jogo"
+            self.tela_jogar_novamente = "Frame_jogo"
+
+        frame = self.frames[nome_pagina]
             
         self.after(200, self.play(som))
 
@@ -62,7 +64,7 @@ class mostrar_app(tk.Tk):
             self.inicializar_escolha_de_palavra_e_dica()
             self.tela_jogar_novamente = nome_pagina
         elif nome_pagina == "Frame_dificuldade":
-            self.tela_jogar_novamente = nome_pagina
+            self.tela_jogar_novamente = "Frame_jogo"
         elif nome_pagina == "Frame_perdeu_jogo" or nome_pagina == "Frame_venceu_jogo":
             if self.sorteio == False:
                 self.frame_venceu_jogo.lb_msg_palavra.config(
@@ -80,6 +82,10 @@ class mostrar_app(tk.Tk):
         frame.tkraise()
 
     def inicializar_jogo(self):
+        if self.tela_jogar_novamente == "Frame_jogo":
+            self.tela_jogar_novamente = "repetir"
+            self.frame_dificuldade.selecao_dificuldade(self.dificuldade)
+
         self.frame_jogo.canvas.delete("all")
         self.frame_jogo.canvas.create_image(
             0, 0, image=self.frame_jogo.img_forca[0], anchor=tk.NW)
@@ -90,6 +96,7 @@ class mostrar_app(tk.Tk):
         self.frame_jogo.lb_letras_erradas.config(text='')
 
         if self.sorteio == False:
+            self.frame_jogo.lb_dificuldade.config(text="")
             forca.dica = self.frame_palavra_e_dica.txt_dica.get()
             self.frame_jogo.txt_dica.delete(0, "end")
             self.frame_jogo.txt_dica.insert(0, forca.dica)
@@ -98,13 +105,14 @@ class mostrar_app(tk.Tk):
             self.frame_jogo.txt_palavra.delete(0, "end")
             self.frame_jogo.txt_palavra.insert(0, forca.palavra_formatada)
         else:
-            forca.dica = self.dica
+            forca.dica = self.dica  
             self.frame_jogo.txt_dica.delete(0, "end")
             self.frame_jogo.txt_dica.insert(0, forca.dica)
             forca.palavra = self.palavra
             forca.formatar()
             self.frame_jogo.txt_palavra.delete(0, "end")
             self.frame_jogo.txt_palavra.insert(0, forca.palavra_formatada)
+            self.frame_jogo.lb_dificuldade.config(text=self.dificuldade)
 
         self.frame_jogo.modo_letra()
 
@@ -142,12 +150,12 @@ class mostrar_app(tk.Tk):
             FROM tb_dica WHERE N_IDDICA={self.id_dica};""")
 
     def sortear_palavra(self):
-        dificuldade = self.frame_dificuldade.dificuldade
+        self.dificuldade = self.frame_dificuldade.dificuldade
 
         # consultar palavras com a dica e com a dificuldade escolhida que sejam :
         # DIFERENTES de VERDADEIRO para palavras anteriores.
         consulta_palavra = self.banco.consultar(f"""SELECT N_IDPALAVRA, T_PALAVRA 
-        FROM tb_palavra WHERE N_IDDICA={self.id_dica} AND T_DIFICULDADE='{dificuldade}' AND B_CHAMADA=0;""")
+        FROM tb_palavra WHERE N_IDDICA={self.id_dica} AND T_DIFICULDADE='{self.dificuldade}' AND B_CHAMADA=0;""")
 
         try:
             palavra = escolha(consulta_palavra)
@@ -155,9 +163,9 @@ class mostrar_app(tk.Tk):
             self.palavra = palavra[1].upper()
         except:
             self.banco.executar(f"""UPDATE tb_palavra SET B_CHAMADA=0 
-            WHERE N_IDDICA={self.id_dica} AND T_DIFICULDADE='{dificuldade}';""")
+            WHERE N_IDDICA={self.id_dica} AND T_DIFICULDADE='{self.dificuldade}';""")
             consulta_palavra = self.banco.consultar(f"""SELECT N_IDPALAVRA, T_PALAVRA 
-            FROM tb_palavra WHERE N_IDDICA={self.id_dica} AND T_DIFICULDADE='{dificuldade}' AND B_CHAMADA=0;""")
+            FROM tb_palavra WHERE N_IDDICA={self.id_dica} AND T_DIFICULDADE='{self.dificuldade}' AND B_CHAMADA=0;""")
 
         self.banco.executar(f"""UPDATE tb_palavra SET B_CHAMADA=1 
         WHERE N_IDPALAVRA={self.id_palavra};""")
