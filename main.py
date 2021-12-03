@@ -174,7 +174,7 @@ class mostrar_app(tk.Tk):
 
     def play(self, arquivo):
         if arquivo != None:
-            caminho = gui.pasta_app + "sons\\" + str(arquivo) + ".mp3"
+            caminho = gui.pasta_app + "sons\\" + str(arquivo) + ".wav"
             pg.mixer.music.load(caminho)
             pg.mixer.music.play(loops=0)
 
