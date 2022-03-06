@@ -4,8 +4,8 @@ import os
 pasta_app = os.path.dirname(__file__) + "\\images\\"
 quantidade_de_erros = 0
 
-# --> cores pré selecionadas:
-fundo_escuro = "#212121"
+# --> cores pré definidas:
+fundo = "#212121"
 branco = "#fff"
 verde = "#9cc814"
 vermelho = "#f83030"
@@ -17,17 +17,17 @@ class Frame_menu(tk.Frame):
     def __init__(self, controle, **kwargs):
         tk.Frame.__init__(self)
         self.controle = controle
-        self.configure(background=fundo_escuro)
+        self.configure(background=fundo)
 
         self.img_forca_logo = tk.PhotoImage(file=pasta_app + "forca_logo.png")
         self.lb_forca_logo = tk.Label(self,
                                       image=self.img_forca_logo,
-                                      background=fundo_escuro
+                                      background=fundo
                                       ).place(x=750, y=150)
 
         self.lb_titulo_jogo = tk.Label(self,
                                        text="Jogo da Forca",
-                                       background=fundo_escuro,
+                                       background=fundo,
                                        foreground=marrom,
                                        anchor=tk.CENTER,
                                        font="Corbel 70 italic"
@@ -38,8 +38,8 @@ class Frame_menu(tk.Frame):
                                              command=lambda: controle.mostrar_frame(
                                                  "Frame_palavra_e_dica", "troca_de_tela"),
                                              font="Corbel 30 italic",
-                                             background=fundo_escuro,
-                                             activebackground=fundo_escuro,
+                                             background=fundo,
+                                             activebackground=fundo,
                                              borderwidth=0,
                                              foreground=branco,
                                              activeforeground=verde
@@ -51,8 +51,8 @@ class Frame_menu(tk.Frame):
                                              controle.mostrar_frame(
                                                  "Frame_dificuldade", "troca_de_tela"),
                                              font="Corbel 30 italic",
-                                             background=fundo_escuro,
-                                             activebackground=fundo_escuro,
+                                             background=fundo,
+                                             activebackground=fundo,
                                              borderwidth=0,
                                              foreground=branco,
                                              activeforeground=verde
@@ -62,8 +62,8 @@ class Frame_menu(tk.Frame):
                                           text="Sair do Jogo",
                                           command=lambda: self.sair_jogo(),
                                           font="Corbel 30 italic",
-                                          background=fundo_escuro,
-                                          activebackground=fundo_escuro,
+                                          background=fundo,
+                                          activebackground=fundo,
                                           borderwidth=0,
                                           foreground=branco,
                                           activeforeground=vermelho
@@ -71,7 +71,7 @@ class Frame_menu(tk.Frame):
 
         self.lb_autor = tk.Label(self,
                                  text="By: MatheusLPolidoro",
-                                 background=fundo_escuro,
+                                 background=fundo,
                                  foreground=branco,
                                  anchor=tk.CENTER,
                                  font="Corbel 18 italic"
@@ -87,7 +87,7 @@ class Frame_palavra_e_dica(tk.Frame):
     def __init__(self, controle, **kwargs):
         tk.Frame.__init__(self)
         self.controle = controle
-        self.configure(background=fundo_escuro)
+        self.configure(background=fundo)
 
         self.palavra = []
 
@@ -95,12 +95,12 @@ class Frame_palavra_e_dica(tk.Frame):
                                 text="Digite a dica",
                                 anchor=tk.CENTER,
                                 foreground=branco,
-                                background=fundo_escuro,
+                                background=fundo,
                                 font="corbel 24 italic"
                                 ).place(relx=.5, rely=.25, anchor="center")
 
         self.txt_dica = tk.Entry(self,
-                                 background=fundo_escuro,
+                                 background=fundo,
                                  foreground=branco,
                                  font=("Corbel", 24, "italic"),
                                  justify=tk.CENTER,
@@ -124,7 +124,7 @@ class Frame_palavra_e_dica(tk.Frame):
         self.img_invalido = tk.PhotoImage(file=pasta_app + "invalido.png")
 
         self.lb_valicao_dica = tk.Label(self,
-                                        background=fundo_escuro
+                                        background=fundo
                                         )
         self.lb_valicao_dica.place(relx=.765,
                                    rely=.35,
@@ -137,12 +137,12 @@ class Frame_palavra_e_dica(tk.Frame):
                                    text="Digite a palavra",
                                    anchor=tk.CENTER,
                                    foreground=branco,
-                                   background=fundo_escuro,
+                                   background=fundo,
                                    font="corbel 24 italic"
                                    ).place(relx=.5, rely=.45, anchor="center")
 
         self.txt_palavra = tk.Entry(self,
-                                    background=fundo_escuro,
+                                    background=fundo,
                                     foreground=branco,
                                     font=("corbel", 30, "bold"),
                                     justify=tk.CENTER,
@@ -163,7 +163,7 @@ class Frame_palavra_e_dica(tk.Frame):
         self.txt_palavra.bind("<Key>", self.formatar_entrada_palavra)
 
         self.lb_valicao_palavra = tk.Label(self,
-                                           background=fundo_escuro,
+                                           background=fundo,
                                            )
         self.lb_valicao_palavra.place(relx=.858,
                                       rely=.55,
@@ -175,7 +175,7 @@ class Frame_palavra_e_dica(tk.Frame):
         self.img_voltar = tk.PhotoImage(file=pasta_app + "voltar_escolha.png")
         self.img_opcao = tk.Label(self,
                                   image=self.img_voltar,
-                                  background=fundo_escuro
+                                  background=fundo
                                   ).place(x=880, y=520)
 
         self.btn_opcao = tk.Button(self,
@@ -183,8 +183,8 @@ class Frame_palavra_e_dica(tk.Frame):
                                    command=lambda: controle.mostrar_frame(
                                        "Frame_menu", "troca_de_tela"),
                                    font="Corbel 20 italic",
-                                   background=fundo_escuro,
-                                   activebackground=fundo_escuro,
+                                   background=fundo,
+                                   activebackground=fundo,
                                    borderwidth=0,
                                    foreground=verde,
                                    activeforeground=branco
@@ -201,8 +201,8 @@ class Frame_palavra_e_dica(tk.Frame):
                                           text="Começar o Jogo",
                                           command=self.validar_dica_e_palavra,
                                           font="corbel 22 italic bold",
-                                          background=fundo_escuro,
-                                          activebackground=fundo_escuro,
+                                          background=fundo,
+                                          activebackground=fundo,
                                           foreground=verde,
                                           activeforeground=branco,
                                           borderwidth=0,
@@ -314,7 +314,7 @@ class Frame_dificuldade(tk.Frame):
     def __init__(self, controle, **kwargs):
         tk.Frame.__init__(self)
         self.controle = controle
-        self.configure(background=fundo_escuro)
+        self.configure(background=fundo)
 
         self.palavra = []
 
@@ -324,7 +324,7 @@ class Frame_dificuldade(tk.Frame):
                                        "FÁCIL"),
                                    anchor=tk.CENTER,
                                    foreground=branco,
-                                   background=fundo_escuro,
+                                   background=fundo,
                                    activebackground=verde,
                                    font="corbel 26 italic",
                                    borderwidth=0
@@ -336,7 +336,7 @@ class Frame_dificuldade(tk.Frame):
                                        "MÉDIO"),
                                    anchor=tk.CENTER,
                                    foreground=branco,
-                                   background=fundo_escuro,
+                                   background=fundo,
                                    activebackground=verde,
                                    font="corbel 26 italic",
                                    borderwidth=0
@@ -348,7 +348,7 @@ class Frame_dificuldade(tk.Frame):
                                        "DIFÍCIL"),
                                    anchor=tk.CENTER,
                                    foreground=branco,
-                                   background=fundo_escuro,
+                                   background=fundo,
                                    activebackground=verde,
                                    font="corbel 26 italic",
                                    borderwidth=0
@@ -357,7 +357,7 @@ class Frame_dificuldade(tk.Frame):
         self.img_voltar = tk.PhotoImage(file=pasta_app + "voltar_escolha.png")
         self.img_opcao = tk.Label(self,
                                   image=self.img_voltar,
-                                  background=fundo_escuro
+                                  background=fundo
                                   ).place(x=880, y=520)
 
         self.btn_opcao = tk.Button(self,
@@ -365,8 +365,8 @@ class Frame_dificuldade(tk.Frame):
                                    command=lambda: controle.mostrar_frame(
                                        "Frame_menu", "troca_de_tela"),
                                    font="Corbel 20 italic",
-                                   background=fundo_escuro,
-                                   activebackground=fundo_escuro,
+                                   background=fundo,
+                                   activebackground=fundo,
                                    borderwidth=0,
                                    foreground=verde,
                                    activeforeground=branco
@@ -384,18 +384,18 @@ class Frame_jogo(tk.Frame):
         tk.Frame.__init__(self)
         self.controle = controle
         self.forca = kwargs['jogo']
-        self.configure(background=fundo_escuro)
+        self.configure(background=fundo)
 
         self.img_forca = [tk.PhotoImage(
             file=pasta_app + f'forca_{i}.png') for i in range(0, 7)]
 
         self.canvas = tk.Canvas(
-            self, width=170, height=198, bg=fundo_escuro, highlightthickness=0)
+            self, width=170, height=198, bg=fundo, highlightthickness=0)
         self.canvas.create_image(0, 0, image=self.img_forca[0], anchor=tk.NW)
         self.canvas.place(relx=.5, rely=.34, anchor=tk.CENTER)
 
         self.txt_dica = tk.Entry(self,
-                                 background=fundo_escuro,
+                                 background=fundo,
                                  justify=tk.CENTER,
                                  foreground=branco,
                                  font="Corbel 24 italic",
@@ -404,7 +404,7 @@ class Frame_jogo(tk.Frame):
                                  )
 
         self.lb_dificuldade = tk.Label(self,
-                                background=fundo_escuro,
+                                background=fundo,
                                 foreground=verde,
                                 anchor=tk.CENTER,
                                 font="Corbel 40 italic"
@@ -415,7 +415,7 @@ class Frame_jogo(tk.Frame):
         self.txt_dica.place(x=40, y=50, width=1000)
 
         self.txt_palavra = tk.Entry(self,
-                                    background=fundo_escuro,
+                                    background=fundo,
                                     justify=tk.CENTER,
                                     foreground=branco,
                                     font="Corbel 43 italic",
@@ -428,7 +428,7 @@ class Frame_jogo(tk.Frame):
 
         self.lb_letras_erradas = tk.Label(self,
                                           text='teste',
-                                          background=fundo_escuro,
+                                          background=fundo,
                                           foreground=vermelho,
                                           anchor=tk.CENTER,
                                           font="Corbel 20 italic"
@@ -455,7 +455,7 @@ class Frame_jogo(tk.Frame):
                                     background="#1a7420",
                                     activebackground=verde,
                                     foreground=branco,
-                                    activeforeground=fundo_escuro,
+                                    activeforeground=fundo,
                                     borderwidth=0,
                                     highlightthickness=3,
                                     ).place(relx=.5, rely=.85, anchor="center")
@@ -467,7 +467,7 @@ class Frame_jogo(tk.Frame):
         self.img_voltar = tk.PhotoImage(file=pasta_app + "voltar_escolha.png")
         self.img_opcao_arriscar = tk.Label(self,
                                            image=self.img_trevo,
-                                           background=fundo_escuro
+                                           background=fundo
                                            )
         self.img_opcao_arriscar.place(x=880, y=520)
 
@@ -475,8 +475,8 @@ class Frame_jogo(tk.Frame):
                                    text="Arriscar",
                                    command=self.arriscar_opcoes,
                                    font="Corbel 20 italic",
-                                   background=fundo_escuro,
-                                   activebackground=fundo_escuro,
+                                   background=fundo,
+                                   activebackground=fundo,
                                    borderwidth=0,
                                    foreground=verde,
                                    activeforeground=branco
@@ -486,7 +486,7 @@ class Frame_jogo(tk.Frame):
         self.img_skull = tk.PhotoImage(file=pasta_app + "desistir.png")
         self.img_opcao_desistir = tk.Label(self,
                                            image=self.img_skull,
-                                           background=fundo_escuro
+                                           background=fundo
                                            ).place(x=40, y=520)
 
         self.btn_desistir = tk.Button(self,
@@ -494,8 +494,8 @@ class Frame_jogo(tk.Frame):
                                       command=lambda: controle.mostrar_frame(
                                           "Frame_perdeu_jogo", "derrota"),
                                       font="Corbel 20 italic",
-                                      background=fundo_escuro,
-                                      activebackground=fundo_escuro,
+                                      background=fundo,
+                                      activebackground=fundo,
                                       borderwidth=0,
                                       foreground=vermelho,
                                       activeforeground=branco
@@ -532,6 +532,7 @@ class Frame_jogo(tk.Frame):
 
         self.lb_letras_erradas.config(
             text=str(', '.join(self.forca.letras_erradas)))
+
 
         self.update()
 
@@ -597,26 +598,26 @@ class Frame_perdeu_jogo(tk.Frame):
     def __init__(self, controle, **kwargs):
         tk.Frame.__init__(self)
         self.controle = controle
-        self.configure(background=fundo_escuro)
+        self.configure(background=fundo)
 
         self.img_perdeu = tk.PhotoImage(file=pasta_app + "img_perdeu.png")
         self.lb_perdeu = tk.Label(self,
                                   image=self.img_perdeu,
-                                  background=fundo_escuro
+                                  background=fundo
                                   )
         self.lb_perdeu.place(relx=.5, rely=.3, anchor="center")
 
         self.lb_msg_perdeu = tk.Label(self,
                                       text="Você PERDEU...",
                                       font="corbel 60 italic",
-                                      background=fundo_escuro,
+                                      background=fundo,
                                       foreground=branco,
                                       ).place(relx=.1, rely=.6, anchor="w")
 
         self.lb_msg_palavra = tk.Label(self,
                                        text="A palavra é ",
                                        font="corbel 23",
-                                       background=fundo_escuro,
+                                       background=fundo,
                                        foreground=branco
                                        )
         self.lb_msg_palavra.place(relx=.12, rely=.7, anchor="w")
@@ -632,8 +633,8 @@ class Frame_perdeu_jogo(tk.Frame):
                                   command=lambda: controle.mostrar_frame(
                                       "Frame_menu", "troca_de_tela"),
                                   font="Corbel 20 italic bold",
-                                  background=fundo_escuro,
-                                  activebackground=fundo_escuro,
+                                  background=fundo,
+                                  activebackground=fundo,
                                   borderwidth=0,
                                   foreground=branco,
                                   activeforeground=marrom
@@ -645,8 +646,8 @@ class Frame_perdeu_jogo(tk.Frame):
                                              command=lambda: controle.mostrar_frame(
                                                  'Jogar_novamente', 'troca_de_tela'),
                                              font="Corbel 20 italic bold",
-                                             background=fundo_escuro,
-                                             activebackground=fundo_escuro,
+                                             background=fundo,
+                                             activebackground=fundo,
                                              borderwidth=0,
                                              foreground=branco,
                                              activeforeground=marrom
@@ -663,19 +664,19 @@ class Frame_venceu_jogo(tk.Frame):
         self.img_bg = tk.PhotoImage(file=pasta_app + "backgroud_venceu.png")
         self.lb_bg = tk.Label(self,
                               image=self.img_bg,
-                              background=fundo_escuro
+                              background=fundo
                               ).place(x=0, y=0, width=1080, height=608)
 
         self.lb_msg_venceu = tk.Label(self,
                                       text="Você VENCEU!",
-                                      background=fundo_escuro,
+                                      background=fundo,
                                       foreground=branco,
                                       font="corbel 60 italic"
                                       ).place(relx=.5, rely=.5, anchor="center")
 
         self.lb_msg_palavra = tk.Label(self,
                                        text="A palavra é ",
-                                       background=fundo_escuro,
+                                       background=fundo,
                                        foreground=branco,
                                        font="corbel 23 italic"
                                        )
@@ -686,8 +687,8 @@ class Frame_venceu_jogo(tk.Frame):
                                   command=lambda: controle.mostrar_frame(
                                       "Frame_menu", "troca_de_tela"),
                                   font="Corbel 20 italic bold",
-                                  background=fundo_escuro,
-                                  activebackground=fundo_escuro,
+                                  background=fundo,
+                                  activebackground=fundo,
                                   borderwidth=0,
                                   foreground=branco,
                                   activeforeground=marrom
@@ -699,8 +700,8 @@ class Frame_venceu_jogo(tk.Frame):
                                              command=lambda: controle.mostrar_frame(
                                                  'Jogar_novamente', 'troca_de_tela'),
                                              font="Corbel 20 italic bold",
-                                             background=fundo_escuro,
-                                             activebackground=fundo_escuro,
+                                             background=fundo,
+                                             activebackground=fundo,
                                              borderwidth=0,
                                              foreground=branco,
                                              activeforeground=marrom

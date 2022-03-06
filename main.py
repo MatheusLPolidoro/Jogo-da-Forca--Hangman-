@@ -8,7 +8,6 @@ import pygame as pg
 forca = fc.Fc()
 pg.mixer.init()
 
-
 class mostrar_app(tk.Tk):
 
     def __init__(self):
@@ -49,14 +48,14 @@ class mostrar_app(tk.Tk):
 
     def mostrar_frame(self, nome_pagina, som):
         if nome_pagina == 'Jogar_novamente' and self.tela_jogar_novamente != "repetir":
+            self.after(200, self.play(som))
             nome_pagina = self.tela_jogar_novamente
         elif nome_pagina == 'Jogar_novamente' and self.tela_jogar_novamente == "repetir":
             nome_pagina = "Frame_jogo"
-            self.tela_jogar_novamente = "Frame_jogo"
+        else:
+            self.after(200, self.play(som))
 
         frame = self.frames[nome_pagina]
-            
-        self.after(200, self.play(som))
 
         if nome_pagina == "Frame_jogo":
             self.inicializar_jogo()
@@ -84,6 +83,8 @@ class mostrar_app(tk.Tk):
     def inicializar_jogo(self):
         if self.tela_jogar_novamente == "Frame_jogo":
             self.tela_jogar_novamente = "repetir"
+        elif self.tela_jogar_novamente == "repetir":
+            self.tela_jogar_novamente = "Frame_jogo"
             self.frame_dificuldade.selecao_dificuldade(self.dificuldade)
 
         self.frame_jogo.canvas.delete("all")
@@ -136,7 +137,6 @@ class mostrar_app(tk.Tk):
 
         # consultar quantas dicas constam cadastradas.
         self.qtd_dicas = self.banco.consultar("SELECT N_IDDICA FROM tb_dica")
-        self.sortear_dica()
 
     def sortear_dica(self):
         # sortear uma dica (número inteiro) que seja diferente da dica anterior.
@@ -171,6 +171,7 @@ class mostrar_app(tk.Tk):
         WHERE N_IDPALAVRA={self.id_palavra};""")
         self.sorteio = True
         self.after(200, self.mostrar_frame("Frame_jogo", "troca_de_tela"))
+        print(self.palavra)
 
     def play(self, arquivo):
         if arquivo != None:
